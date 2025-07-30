@@ -2,13 +2,17 @@
 MLM.Site.Network.Index.Controller = function () {
     var base = this;
     base.Initialize = function () {
+        base.Ajax.AjaxGetLogin.submit();
         base.Ajax.AjaxGetDepartment.submit();
         base.Ajax.AjaxGetStores.submit();
         base.Control.slcDepartment().change(base.Event.slcDepartmentChange);
         base.Control.slcProvince().change(base.Event.slcProvinceChange);
         base.Control.btnSave().click(base.Event.btnSaveClick);
+        base.Control.btnGenerateURLRegister().click(base.Event.btnGenerateURLRegisterClick);
     };
     base.Parameters = {
+        fullNameUrl: "",
+        userIdUrl: 0
     };
     base.Control = {
         txtPassword: function () { return $('#txtPassword'); },
@@ -30,6 +34,8 @@ MLM.Site.Network.Index.Controller = function () {
         txtPhone: function () { return $('#txtPhone'); },
         txtUbigeo: function () { return $('#txtUbigeo'); },
         btnSave: function () { return $('#btnSave'); },
+        hdnUserIdUrl: function () { return $('#hdnUserIdUrl'); },
+        btnGenerateURLRegister: function () { return $('#btnGenerateURLRegister'); },
     };
     base.Event = {
         AjaxGetDepartmentSuccess: function (data) {
@@ -100,12 +106,25 @@ MLM.Site.Network.Index.Controller = function () {
                 }
             }
         },
+        AjaxGetLoginSuccess: function (data) {
+            if (data) {
+                if (data.isSuccess) {
+                    base.Parameters.fullNameUrl = data.data.names + data.data.lastName;
+                    base.Parameters.userIdUrl = data.data.userId;
+                }
+            }
+        },
         AjaxRegisterUserSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
                     if (data.data.status) {
-                        Swal.fire("Excelente !!", "Usuario Registrado !!", "success")
                         base.Function.CleanFields();
+                        Swal.fire("Excelente !!", "Usuario Registrado !!", "success").then((result) => {
+                            if (base.Parameters.userIdUrl == 0) {
+                                window.location.href = MLM.Site.Network.Actions.RedirectLogin;
+                            }
+                        });
+                        
                     }
                     else {
                         Swal.fire("Oops...", data.data.message, "error")
@@ -143,7 +162,7 @@ MLM.Site.Network.Index.Controller = function () {
             const age = hoy.diff(birthDate, 'years');
             var storeid = base.Control.slcStore().val() == 0 ? null : base.Control.slcStore().val();
             var birthDateData = base.Function.SetBirthDate(base.Control.txtBirthDate().val());
-            if (base.Control.txtDocument().val() == "") {
+            if (base.Control.txtDocument().val() == "" || base.Control.txtDocument().val().length < 8) {
                 Swal.fire("Oops...", "Por favor, ingrese un documento válido", "error");
             }
             else if (base.Control.txtUserName().val() == "") {
@@ -164,7 +183,7 @@ MLM.Site.Network.Index.Controller = function () {
             else if (base.Control.txtEmail().val() == "") {
                 Swal.fire("Oops...", "Por favor, ingrese un correo válido", "error");
             }
-            else if (base.Control.txtPhone().val() == "") {
+            else if (base.Control.txtPhone().val() == "" || base.Control.txtPhone().val().length < 9) {
                 Swal.fire("Oops...", "Por favor, ingrese un celular válido", "error");
             }
             else if (base.Control.slcProvince().val() == null || base.Control.slcProvince().val() == "0") {
@@ -177,6 +196,8 @@ MLM.Site.Network.Index.Controller = function () {
                 Swal.fire("Oops...", "Su fecha de nacimiento debe ser mayor a 18 años", "error");
             }
             else {
+                var hdnUserIdUrl = base.Control.hdnUserIdUrl().val();
+                var patronId = hdnUserIdUrl == null || hdnUserIdUrl == '' ? 0 : hdnUserIdUrl;
                 base.Ajax.AjaxRegisterUser.data = {
                     userName: base.Control.txtUserName().val(),
                     typeDocument: base.Control.slcTypeDocument().val(),
@@ -196,14 +217,29 @@ MLM.Site.Network.Index.Controller = function () {
                     profilePicture: "",
                     recognitionName: base.Control.txtRecognitionName().val(),
                     storeId: storeid,
-                    patron: 0,
+                    patron: patronId,
                     arm: 0,
                 };
                 base.Ajax.AjaxRegisterUser.submit();
             }
         },
+        btnGenerateURLRegisterClick: function () {
+            const currentUrl = window.location.href + '/' + base.Parameters.fullNameUrl + '/' + base.Parameters.userIdUrl;
+            navigator.clipboard.writeText(currentUrl)
+                .then(function () {
+                    Swal.fire("Excelente !!", "URL copiada !!", "success")
+                })
+                .catch(function (err) {
+                    console.error('Error al copiar:', err);
+                });
+        },
     };
     base.Ajax = {
+        AjaxGetLogin: new MLM.Site.UI.Web.Components.Ajax({
+            action: MLM.Site.Network.Actions.GetLogin,
+            autoSubmit: false,
+            onSuccess: base.Event.AjaxGetLoginSuccess
+        }),
         AjaxRegisterUser: new MLM.Site.UI.Web.Components.Ajax({
             action: MLM.Site.Network.Actions.RegisterUser,
             autoSubmit: false,

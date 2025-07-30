@@ -20,7 +20,9 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
         sizePagination: 5,
         productIdUpdate: 0,
         typePurchaseId: 0,
-        countProducts: 0
+        countProducts: 0,
+        listTypePurchase: [],
+        outstandingAmount: 0
     };
     base.Control = {
         divPagination: function () { return $('#pagination'); },
@@ -35,6 +37,8 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
         slcTypeDocumentReceipt: function () { return $('#slcTypeDocumentReceipt'); },
         txtDocumentReceipt: function () { return $('#txtDocumentReceipt'); },
         btnCompletedOrder: function () { return $('#btnCompletedOrder'); },
+        spnOutstandingAmount: function () { return $('#spnOutstandingAmount'); },
+        divOutstandingPackageAmount: function () { return $('#divOutstandingPackageAmount'); },
     };
     base.Event = {
         AjaxGetTypePaymentsSuccess: function (data) {
@@ -78,11 +82,8 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
         AjaxGetTypePurchasesSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
+                    base.Parameters.listTypePurchase = data.data;
                     base.Control.slcTypePurchase().empty();
-                    base.Control.slcTypePurchase().append($('<option>', {
-                        value: 0,
-                        text: 'Seleccione'
-                    }));
                     $.each(data.data, function (key, value) {
                         base.Control.slcTypePurchase().append($('<option>', {
                             value: value.typePurchaseId,
@@ -96,7 +97,16 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
         },
         AjaxSetTypePurchaseSessionSuccess: function (data) {
             if (data) {
-                if (data.data.isSuccess) {
+                if (data.isSuccess) {
+                    base.Control.lblNetAmount().text(data.data.newCalculationTypePurchase.netAmount);
+                    if (base.Parameters.outstandingAmount > 0) {
+                        var outstandingAmount = base.Parameters.outstandingAmount - data.data.newCalculationTypePurchase.netAmount;
+                        var showOutstandingAmount = outstandingAmount < 0 ? 0 : outstandingAmount;
+                        base.Control.spnOutstandingAmount().text(showOutstandingAmount);
+                        base.Control.divOutstandingPackageAmount().show();
+                    }
+                    base.Function.ListingProducts(data.data.newCalculationTypePurchase.purchaseDetail);
+                    $('#loading-area').fadeOut();
                 }
             }
         },
@@ -154,6 +164,14 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
                     var typeDocumentReceipt = data.data.typeDocumentReceipt == null ? "0" : data.data.typeDocumentReceipt;
                     base.Control.slcTypeDocumentReceipt().val(typeDocumentReceipt);
                     base.Control.slcTypeDocumentReceipt().selectpicker('refresh');
+                    var typePurchase = base.Parameters.listTypePurchase.find(t => t.typePurchaseId === data.data.typePurchaseId);
+                    if (typePurchase.priceToPurchase > 0) {
+                        base.Parameters.outstandingAmount = typePurchase.priceToPurchase;
+                        var outstandingAmount = base.Parameters.outstandingAmount - data.data.netAmount;
+                        var showOutstandingAmount = outstandingAmount < 0 ? 0 : outstandingAmount;
+                        base.Control.spnOutstandingAmount().text(showOutstandingAmount);
+                        base.Control.divOutstandingPackageAmount().show();
+                    }
                     base.Function.ListingProducts(data.data.purchaseDetail);
                 }
             }
@@ -172,7 +190,14 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
                     base.Control.slcStore().val(data.data.orderData.storeId);
                     base.Control.slcStore().selectpicker('refresh');
                     base.Function.ListingProducts(data.data.orderData.purchaseDetail);
-                    Swal.fire("Excelente !!", "Pedido Actualizado", "success");
+                    if (base.Parameters.outstandingAmount > 0) {
+                        var outstandingAmount = base.Parameters.outstandingAmount - data.data.orderData.netAmount;
+                        var showOutstandingAmount = outstandingAmount < 0 ? 0 : outstandingAmount;
+                        base.Control.spnOutstandingAmount().text(showOutstandingAmount);
+                        base.Control.divOutstandingPackageAmount().show();
+                    }
+                    $('#loading-area').fadeOut();
+                    //Swal.fire("Excelente !!", "Pedido Actualizado", "success");
                 }
                 else {
                     Swal.fire("Oops...", data.data.message, "error");
@@ -188,6 +213,7 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
                     base.Control.lblGrossAmount().text(data.data.grossAmount);
                     base.Control.lblNetAmount().text(data.data.netAmount);
                     base.Function.ListingProducts(data.data.purchaseDetail);
+                    $('#loading-area').fadeOut();
                     Swal.fire("Excelente !!", "Producto Eliminado", "success");
                     if (data.data.quantity == 0) {
                         window.location.href = MLM.Site.ShoppingCart.Actions.RedirectOrder;
@@ -222,8 +248,11 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
             }
         },
         slcTypePurchaseChange: function () {
+            $('#loading-area').fadeIn();
             var name = $(this).find('option:selected').text();
             var typePurchaseId = $(this).val();
+            var typePurchase = base.Parameters.listTypePurchase.find(t => t.typePurchaseId == typePurchaseId);
+            base.Parameters.outstandingAmount = typePurchase.priceToPurchase;
             base.Ajax.AjaxSetTypePurchaseSession.data = {
                 typePurchaseName: name,
                 typePurchaseId: typePurchaseId
@@ -399,18 +428,32 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
         clsAddNumber: function () {
             var parentElement = $(document);
             parentElement.on('click', '.add-number', function () {
+                $('#loading-area').fadeIn();
                 var valueAdd = parseInt($(this).attr('value-hidden'));
                 var newQuantity = parseInt($('#txtNumber' + valueAdd).val()) + 1;
-                $('#txtNumber' + valueAdd).val(newQuantity)
+                $('#txtNumber' + valueAdd).val(newQuantity);
+                base.Ajax.AjaxAddToOrder.data = {
+                    quantity: newQuantity,
+                    productId: valueAdd,
+                    process: 'Edit'
+                };
+                base.Ajax.AjaxAddToOrder.submit();
             });
         },
         clsSubNumber: function () {
             var parentElement = $(document);
             parentElement.on('click', '.sub-number', function () {
+                $('#loading-area').fadeIn();
                 var valueAdd = parseInt($(this).attr('value-hidden'));
                 var newQuantity = parseInt($('#txtNumber' + valueAdd).val()) - 1;
                 if (newQuantity > 0) {
                     $('#txtNumber' + valueAdd).val(newQuantity)
+                    base.Ajax.AjaxAddToOrder.data = {
+                        quantity: newQuantity,
+                        productId: valueAdd,
+                        process: 'Edit'
+                    };
+                    base.Ajax.AjaxAddToOrder.submit();
                 }
             });
         },
@@ -501,7 +544,7 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
 				    	<button value-hidden="${product.productId}" class="btn btn-primary backgroundPurpleButtonMLM sharp sub-number" style="color:white;margin-right: 0.0rem;">-</button>
 				    	<input type="text" id="txtNumber${product.productId}" value="${product.quantity}" class="form-control input-number" style="margin-left: 0.7rem; margin-right: 0.7rem;text-align: center;" />
 				    	<button value-hidden="${product.productId}" class="btn btn-primary backgroundPurpleButtonMLM sharp add-number" style="color:white;margin-right: 0.0rem;">+</button>
-                        <button value-hidden="${product.productId}" class="btn btn-primary backgroundYellowButtonMLM sharp updtToOrder" style="color:white;margin-left: 5px;"><i class="fa-solid fa-arrows-rotate"></i></button>
+        
 				    </div>
 				    <div class="col-xl-2 col-sm-6" style="display: flex;justify-content: center; align-items: center;padding-right: inherit; padding-top: inherit;">
 				    	<h5>S/<a id="lblSubtotalNetAmount${product.productId}">${product.subtotalNetAmount}</a></h5>
@@ -512,6 +555,8 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
 				</li>
                 `;
                 $groupProducts.append(productHtml);
+
+                /**                <button value-hidden="${product.productId}" class="btn btn-primary backgroundYellowButtonMLM sharp updtToOrder" style="color:white;margin-left: 5px;"><i class="fa-solid fa-arrows-rotate"></i></button> */
             });
             base.Function.UpdatePagination();
         }
