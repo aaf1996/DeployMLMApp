@@ -90,13 +90,16 @@ MLM.Site.HistoricalOrder.Index.Controller = function () {
                 Swal.fire("Oops...", "Por favor, adjunto un archivo válido", "error")
             }
             else {
+                let paymentDate = base.Control.txtPaymentDate().val().split("/");
+                let formatPaymentDate = `${paymentDate[2]}-${paymentDate[1]}-${paymentDate[0]}`;
+
                 var formData = new FormData();
                 formData.append('file', fileInput);
                 formData.append('imageUrl', "");
                 formData.append('purchaseId', base.Parameters.purchaseId);
                 formData.append('bank', base.Control.slcBank().val());
                 formData.append('operatingNumber', base.Control.txtOperationNumber().val());
-                formData.append('paymentDate', base.Control.txtPaymentDate().val());
+                formData.append('paymentDate', formatPaymentDate);
 
                 $.ajax({
                     url: MLM.Site.HistoricalOrder.Actions.SavePaymentDeposit,
