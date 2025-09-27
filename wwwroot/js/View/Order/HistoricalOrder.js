@@ -113,7 +113,7 @@ MLM.Site.HistoricalOrder.Index.Controller = function () {
                                 base.Function.GetHistoricalOrder();
                             }
                             else {
-                                Swal.fire("Oops...", "Ocurrió un error, Por favor intententelo nuevamente", "error")
+                                Swal.fire("Oops...", data.message, "error")
                             }
                         }
                     },
