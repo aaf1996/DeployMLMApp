@@ -1,4 +1,3 @@
-//ns('CommandCenter.Site.UI.Web.Components');
 ns('MLM.Site.UI.Web.Components');
 MLM.Site.UI.Web.Components.Ajax = function (opts) {
     this.init(opts);
