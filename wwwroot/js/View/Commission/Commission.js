@@ -1,5 +1,5 @@
-﻿ns('Mitosiz.Site.Commission.Index')
-Mitosiz.Site.Commission.Index.Controller = function () {
+﻿ns('MLM.Site.Commission.Index')
+MLM.Site.Commission.Index.Controller = function () {
     var base = this;
     base.Initialize = function () {
         base.Function.GetLogin();
@@ -13,7 +13,7 @@ Mitosiz.Site.Commission.Index.Controller = function () {
         currentPage: 1,
         totalPages: 1,
         sizePagination: 10,
-        storeId: 0
+        userId: 0
     };
     base.Control = {
         slcPeriod: function () { return $('#slcPeriod'); },
@@ -41,9 +41,9 @@ Mitosiz.Site.Commission.Index.Controller = function () {
         AjaxGetLoginSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
-                    base.Parameters.storeId = data.data.storeId;
-                    base.Function.GetMovementOfCommitteesWholesaleForUser();
-                    base.Function.GetInformationWholesaleProfile();
+                    base.Parameters.userId = data.data.userId;
+                    base.Function.GetMovementOfCommitteesForUser();
+                    base.Function.GetUserProfile();
                 }
             }
         },
@@ -58,41 +58,41 @@ Mitosiz.Site.Commission.Index.Controller = function () {
                         }));
                     });
                     base.Control.slcPeriod().selectpicker('refresh');
-                    base.Function.GetCommissionWholesaleByView();
+                    base.Function.GetCommissionByUser();
                 }
             }
         },
-        AjaxGetMovementOfCommitteesWholesaleForUserlSuccess: function (data) {
+        AjaxGetMovementOfCommitteesForUserSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
                     base.Parameters.totalPages = data.data.totalPages;
-                    base.Function.FillData(data.data.movementOfCommitteesWholesaleForUser);
+                    base.Function.FillData(data.data.movementOfCommitteesForUsers);
                 }
             }
         },
-        AjaxGetInformationWholesaleProfileSuccess: function (data) {
+        AjaxGetUserProfileSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
                     base.Control.lblRUC().text(data.data.ruc);
                     base.Control.lblBank().text(data.data.bank);
                     base.Control.lblAccountNumber().text(data.data.bankAccount);
                     base.Control.lblAccountNumberCCI().text(data.data.interbankAccount);
-                    base.Control.lblHolderName().text(data.data.delegateName);
+                    base.Control.lblHolderName().text(data.data.names + ' ' + data.data.lastName);
                 }
             }
         },
-        AjaxCommissionWholesaleByViewSuccess: function (data) {
+        AjaxGetCommissionByUserSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
-                    base.Control.lblHistoricalCommission().text(data.data.historyCommission);
-                    base.Control.lblCommissionCurrentPeriod().text(data.data.currentCommission);
+                    base.Control.lblHistoricalCommission().text(data.data.historicalCommission);
+                    base.Control.lblCommissionCurrentPeriod().text(data.data.totalCommission);
                     base.Control.lblPendingCommission().text(data.data.commissionToBeCollected);
                     base.Control.lblAmountAvailable().text(data.data.commissionToBeCollected);
                 }
             }
         },
         btnFilterClick: function () {
-            base.Function.GetCommissionWholesaleByView();
+            base.Function.GetCommissionByUser();
         },
         btnCommissionClick: function () {
             base.Control.modalUpdate().modal('show');
@@ -132,13 +132,13 @@ Mitosiz.Site.Commission.Index.Controller = function () {
                 var textReceipt = $("#withInvoice").is(":checked") ? "Factura" : "Sin Factura";
                 formData.append('file', fileInput);
                 formData.append('fileName', "");
-                formData.append('storeId', base.Parameters.storeId);
+                formData.append('userId', base.Parameters.userId);
                 formData.append('concept', base.Control.txtConcept().val());
                 formData.append('receipt', textReceipt);
                 formData.append('amount', base.Control.txtAmountToBeRequest().val());
 
                 $.ajax({
-                    url: Mitosiz.Site.Commission.Actions.SavePaymentDepositWholesale,
+                    url: MLM.Site.Commission.Actions.SaveMovementOfCommittees,
                     type: 'POST',
                     data: formData,
                     processData: false,
@@ -165,56 +165,56 @@ Mitosiz.Site.Commission.Index.Controller = function () {
         },
     };
     base.Ajax = {
-        AjaxGetLogin: new Mitosiz.Site.UI.Web.Components.Ajax({
-            action: Mitosiz.Site.Commission.Actions.GetLogin,
+        AjaxGetLogin: new MLM.Site.UI.Web.Components.Ajax({
+            action: MLM.Site.Commission.Actions.GetLogin,
             autoSubmit: false,
             onSuccess: base.Event.AjaxGetLoginSuccess
         }),
-        AjaxGetComissionPeriodForComission: new Mitosiz.Site.UI.Web.Components.Ajax({
-            action: Mitosiz.Site.Commission.Actions.GetComissionPeriodForComission,
+        AjaxGetComissionPeriodForComission: new MLM.Site.UI.Web.Components.Ajax({
+            action: MLM.Site.Commission.Actions.GetComissionPeriodForComission,
             autoSubmit: false,
             onSuccess: base.Event.AjaxGetComissionPeriodForComissionSuccess
         }),
-        AjaxGetMovementOfCommitteesWholesaleForUser: new Mitosiz.Site.UI.Web.Components.Ajax({
-            action: Mitosiz.Site.Commission.Actions.GetMovementOfCommitteesWholesaleForUser,
+        AjaxGetMovementOfCommitteesForUser: new MLM.Site.UI.Web.Components.Ajax({
+            action: MLM.Site.Commission.Actions.GetMovementOfCommitteesForUser,
             autoSubmit: false,
-            onSuccess: base.Event.AjaxGetMovementOfCommitteesWholesaleForUserlSuccess
+            onSuccess: base.Event.AjaxGetMovementOfCommitteesForUserSuccess
         }),
-        AjaxCommissionWholesaleByView: new Mitosiz.Site.UI.Web.Components.Ajax({
-            action: Mitosiz.Site.Commission.Actions.CommissionWholesaleByView,
+        AjaxGetCommissionByUser: new MLM.Site.UI.Web.Components.Ajax({
+            action: MLM.Site.Commission.Actions.GetCommissionByUser,
             autoSubmit: false,
-            onSuccess: base.Event.AjaxCommissionWholesaleByViewSuccess
+            onSuccess: base.Event.AjaxGetCommissionByUserSuccess
         }),
-        AjaxGetInformationWholesaleProfile: new Mitosiz.Site.UI.Web.Components.Ajax({
-            action: Mitosiz.Site.Commission.Actions.GetInformationWholesaleProfile,
+        AjaxGetUserProfile: new MLM.Site.UI.Web.Components.Ajax({
+            action: MLM.Site.Commission.Actions.GetUserProfile,
             autoSubmit: false,
-            onSuccess: base.Event.AjaxGetInformationWholesaleProfileSuccess
+            onSuccess: base.Event.AjaxGetUserProfileSuccess
         }),
     };
     base.Function = {
         GetLogin: function () {
             base.Ajax.AjaxGetLogin.submit();
         },
-        GetMovementOfCommitteesWholesaleForUser: function () {
-            base.Ajax.AjaxGetMovementOfCommitteesWholesaleForUser.data = {
+        GetMovementOfCommitteesForUser: function () {
+            base.Ajax.AjaxGetMovementOfCommitteesForUser.data = {
                 number: base.Parameters.currentPage,
                 size: base.Parameters.sizePagination,
-                storeId: base.Parameters.storeId
+                userId: base.Parameters.userId
             };
-            base.Ajax.AjaxGetMovementOfCommitteesWholesaleForUser.submit();
+            base.Ajax.AjaxGetMovementOfCommitteesForUser.submit();
         },
-        GetInformationWholesaleProfile: function () {
-            base.Ajax.AjaxGetInformationWholesaleProfile.data = {
-                storeId: base.Parameters.storeId
+        GetUserProfile: function () {
+            base.Ajax.AjaxGetUserProfile.data = {
+                userId: base.Parameters.userId
             };
-            base.Ajax.AjaxGetInformationWholesaleProfile.submit();
+            base.Ajax.AjaxGetUserProfile.submit();
         },
-        GetCommissionWholesaleByView: function () {
-            base.Ajax.AjaxCommissionWholesaleByView.data = {
-                storeId: base.Parameters.storeId,
+        GetCommissionByUser: function () {
+            base.Ajax.AjaxGetCommissionByUser.data = {
+                userId: base.Parameters.userId,
                 commissionPeriodId: base.Control.slcPeriod().val()
             };
-            base.Ajax.AjaxCommissionWholesaleByView.submit();
+            base.Ajax.AjaxGetCommissionByUser.submit();
         },
         clsNumberPagination: function () {
             var parentElement = $(document);
@@ -233,28 +233,28 @@ Mitosiz.Site.Commission.Index.Controller = function () {
                 } else {
                     base.Parameters.currentPage = parseInt(page);
                 }
-                base.Function.GetMovementOfCommitteesWholesaleForUser();
+                base.Function.GetMovementOfCommitteesForUser();
             });
         },
         FillData: function (listData) {
             base.Control.tbodyTable().empty();
             listData.forEach(function (data) {
-                var urlFile = 'https://api.yosoymitosis.com/StaticFiles/MovementOfCommitteesWholesale/' + data.fileName;
+                var urlFile = 'https://api.yosoymitosis.com/StaticFiles/MovementOfCommittees/' + data.fileName;
                 var styleFile = data.fileName == '' ? "display:none;" : "";
                 base.Control.tbodyTable().append('<tr style="text-align: center;">' +
                     '<td>' + data.typeOfMovement + '</td>' +
                     '<td>' + data.concept + '</td>' +
                     '<td>' + data.creationTime + '</td>' +
-                    '<td>' + data.receipt + '</td>' +
+                    '<td>' + (data.receipt || '') + '</td>' +
                     '<td>' +
                     '<div style="' + styleFile + '">' +
                     '<a href = "' + urlFile + '" target="_blank">' +
-                    data.fileName +
+                    (data.fileName || 'No hay archivo disponible')  +
                     '</a>' +
                     '</div></td>' +
                     '<td>' + data.amount + '</td>' +
                     '<td>' + data.status + '</td>' +
-                    '<td>' + data.observation + '</td>' +
+                    '<td>' + (data.observation || '') + '</td>' +
                     '</tr>');
             });
             base.Function.UpdatePagination();
