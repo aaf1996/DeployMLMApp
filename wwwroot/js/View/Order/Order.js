@@ -326,7 +326,7 @@ MLM.Site.Order.Index.Controller = function () {
                     return;
                 }
                 if (base.Control.slcStore().val() == 0) {
-                    Swal.fire("Oops...", "Por favor, seleccione la Tienda", "error");
+                    Swal.fire("Oops...", "Por favor, seleccione Tipo de Pedido", "error");
                     return;
                 }
                 base.Ajax.AjaxAddToOrder.data = {
