@@ -321,23 +321,20 @@ MLM.Site.Order.Index.Controller = function () {
                 var productId = parseInt($(this).attr('value-hidden'));
                 var quantity = parseInt($('#txtNumber' + productId).val());
                 base.Parameters.productIdSelected = productId;
+                if (base.Control.slcTypePurchase().val() == 0) {
+                    Swal.fire("Oops...", "Por favor, seleccione la Tienda", "error");
+                    return;
+                }
                 if (base.Control.slcStore().val() == 0) {
                     Swal.fire("Oops...", "Por favor, seleccione la Tienda", "error");
                     return;
                 }
-                if (base.Control.slcTypePurchase().val() != 0) {
-                    base.Ajax.AjaxAddToOrder.data = {
-                        quantity: quantity,
-                        productId: productId,
-                        storeId: base.Control.slcStore().val(),
-                        typePurchaseId: base.Control.slcTypePurchase().val(),
-                        process: 'Addition'
-                    };
-                    base.Ajax.AjaxAddToOrder.submit();
-                }
-                else {
-                    Swal.fire("Oops...", "Por favor, seleccione el Tipo de Pedido", "error");
-                }
+                base.Ajax.AjaxAddToOrder.data = {
+                    quantity: quantity,
+                    productId: productId,
+                    process: 'Addition'
+                };
+                base.Ajax.AjaxAddToOrder.submit();
             });
         },
         GetProducts: function () {
