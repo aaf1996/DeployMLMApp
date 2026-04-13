@@ -115,6 +115,9 @@
 
     $chartContainer.on('click', '.node', function () {
         const $this = $(this);
+        if ($this.data('clicked')) return;
+
+        $this.data('clicked', true);
         const nodeData = $this.data('nodeData');
         if (!nodeData || $this.closest('li').find('ul').length > 0) return;
         loadNodeChildren(nodeData.id, $this);
