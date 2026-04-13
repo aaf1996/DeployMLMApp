@@ -322,11 +322,11 @@ MLM.Site.Order.Index.Controller = function () {
                 var quantity = parseInt($('#txtNumber' + productId).val());
                 base.Parameters.productIdSelected = productId;
                 if (base.Control.slcTypePurchase().val() == 0) {
-                    Swal.fire("Oops...", "Por favor, seleccione la Tienda", "error");
+                    Swal.fire("Oops...", "Por favor, seleccione la Tipo de Pedido", "error");
                     return;
                 }
                 if (base.Control.slcStore().val() == 0) {
-                    Swal.fire("Oops...", "Por favor, seleccione Tipo de Pedido", "error");
+                    Swal.fire("Oops...", "Por favor, seleccione Tienda", "error");
                     return;
                 }
                 base.Ajax.AjaxAddToOrder.data = {
