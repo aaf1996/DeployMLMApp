@@ -87,27 +87,28 @@
 
 /*$primary  : #7356f1 !default;*/
 :root {
-  --primary: #1EAAE7;
-  --secondary: #AC39D4;
-  --primary-hover: #148abe;
-  --primary-dark: #0a4762;
-  --rgba-primary-1: rgba(30, 170, 231, 0.1);
-  --rgba-primary-2: rgba(30, 170, 231, 0.2);
-  --rgba-primary-3: rgba(30, 170, 231, 0.3);
-  --rgba-primary-4: rgba(30, 170, 231, 0.4);
-  --rgba-primary-5: rgba(30, 170, 231, 0.5);
-  --rgba-primary-6: rgba(30, 170, 231, 0.6);
-  --rgba-primary-7: rgba(30, 170, 231, 0.7);
-  --rgba-primary-8: rgba(30, 170, 231, 0.8);
-  --rgba-primary-9: rgba(30, 170, 231, 0.9);
-  --card: #fff;
-  --text-dark: #312a2a;
-  --text-gray: #737B8B;
-  --text: #7e7e7e;
-  --body-bg: #f5f5f5;
-  --light: #f5f5f5;
-  --border: #e6e6e6;
-  --bs-border-color:#e6e6e6; }
+    --primary: #1EAAE7;
+    --secondary: #AC39D4;
+    --primary-hover: #148abe;
+    --primary-dark: #0a4762;
+    --rgba-primary-1: rgba(30, 170, 231, 0.1);
+    --rgba-primary-2: rgba(30, 170, 231, 0.2);
+    --rgba-primary-3: rgba(30, 170, 231, 0.3);
+    --rgba-primary-4: rgba(30, 170, 231, 0.4);
+    --rgba-primary-5: rgba(30, 170, 231, 0.5);
+    --rgba-primary-6: rgba(30, 170, 231, 0.6);
+    --rgba-primary-7: rgba(30, 170, 231, 0.7);
+    --rgba-primary-8: rgba(30, 170, 231, 0.8);
+    --rgba-primary-9: rgba(30, 170, 231, 0.9);
+    --card: #fff;
+    --text-dark: #312a2a;
+    --text-gray: #737B8B;
+    --text: #7e7e7e;
+    --body-bg: #f8f6ff;
+    --light: #f5f5f5;
+    --border: #e6e6e6;
+    --bs-border-color: #e6e6e6;
+}
 
 .gradient_one {
   background-image: linear-gradient(to right, rgba(186, 1, 181, 0.85) 0%, rgba(103, 25, 255, 0.85) 100%); }
@@ -10600,8 +10601,8 @@ textarea.form-control {
             position: relative;
         } }
   .nav-header .brand-title {
-    margin-left: 0.9375rem;
-    max-width: 6.05rem; }
+    margin-left: 0.1rem;
+    max-width: 10.05rem; }
     @media only screen and (max-width: 767px) {
       .nav-header .brand-title {
         display: none; } }
@@ -25398,11 +25399,10 @@ table.dataTable thead > tr > th.sorting_disabled::before {
   .login-account .apple:hover svg path {
     fill: #fff; }
 .login-account .login-form {
-    border: outset;
     padding: 4%;
     border-radius: 12px;
     background-color: white;
-    max-width: 600px;
+    max-width: 500px;
     margin: 0 auto;
 }
     @media only screen and (max-width: 1400px) {
@@ -25415,8 +25415,8 @@ table.dataTable thead > tr > th.sorting_disabled::before {
       text-align: center;
       margin-bottom: 2rem; }
       .login-account .login-form .login-head .title {
-        font-size: 36px;
-        font-weight: 600; }
+        font-size: 3rem;
+        font-weight: 750; }
         @media only screen and (max-width: 1024px) {
           .login-account .login-form .login-head .title {
             font-size: 23px; } }
@@ -25426,7 +25426,7 @@ table.dataTable thead > tr > th.sorting_disabled::before {
     .login-account .login-form .login-title {
       text-align: center;
       position: relative;
-      margin-bottom: 48px;
+      margin-bottom: 28px;
       z-index: 1;
       display: flex;
       align-items: center; }
