@@ -25407,10 +25407,10 @@ table.dataTable thead > tr > th.sorting_disabled::before {
 }
     @media only screen and (max-width: 1400px) {
       .login-account .login-form {
-        padding: 0 15px; } }
+        padding: 4%; } }
     @media only screen and (max-width: 1024px) {
       .login-account .login-form {
-        padding: 0; } }
+        padding: 4%; } }
     .login-account .login-form .login-head {
       text-align: center;
       margin-bottom: 2rem; }

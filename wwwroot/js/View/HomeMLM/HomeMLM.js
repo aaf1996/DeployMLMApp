@@ -146,13 +146,13 @@ MLM.Site.HomeMLM.Index.Controller = function () {
                     base.Control.divProgressPP().css("width", percentagePP + "%");
                     base.Control.divRequiredPP().text(homeData.homeDataUserNetwork.pp + " / " + homeData.homeDataUserNetwork.nextPP + " PP requeridos");
 
-                    var percentageVQ = Math.round((homeData.homeDataUserNetwork.vq / homeData.homeDataUserNetwork.nextVQ) * 100);
+                    var percentageVQ = homeData.homeDataUserNetwork.nextVQ > 0 ? Math.round((homeData.homeDataUserNetwork.vq / homeData.homeDataUserNetwork.nextVQ) * 100) : 100;
                     percentageVQ = percentageVQ > 100 ? 100 : percentageVQ;
                     base.Control.spnPercentageVQ().text(percentageVQ + "%");
                     base.Control.divProgressVQ().css("width", percentageVQ + "%");
                     base.Control.divRequiredVQ().text(homeData.homeDataUserNetwork.vq + " / " + homeData.homeDataUserNetwork.nextVQ + " VQ requeridos");
 
-                    var percentageDirectAssets = Math.round((homeData.homeDataUserNetwork.directAssets / homeData.homeDataUserNetwork.nextDirectAssets) * 100);
+                    var percentageDirectAssets = homeData.homeDataUserNetwork.nextDirectAssets > 0 ? Math.round((homeData.homeDataUserNetwork.directAssets / homeData.homeDataUserNetwork.nextDirectAssets) * 100) : 100;
                     percentageDirectAssets = percentageDirectAssets > 100 ? 100 : percentageDirectAssets;
                     base.Control.spnPercentageDirects().text(percentageDirectAssets + "%");
                     base.Control.divProgressDirects().css("width", percentageDirectAssets + "%");
