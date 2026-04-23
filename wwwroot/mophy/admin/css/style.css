@@ -25259,7 +25259,7 @@ table.dataTable thead > tr > th.sorting_disabled::before {
 .login-account {
     padding: 40px;
     border-top: 1px solid rgba(0, 0, 0, 0.05);
-    min-height: 100vh;
+    min-height: calc(100vh - 64px);
     background-color: var(--card);
     align-content: center;
     background: radial-gradient(circle, #a400f9 0%, #1e0235 100%);
