@@ -104,6 +104,8 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
                         var showOutstandingAmount = outstandingAmount < 0 ? 0 : outstandingAmount;
                         base.Control.spnOutstandingAmount().text(showOutstandingAmount);
                         base.Control.divOutstandingPackageAmount().show();
+                    } else {
+                        base.Control.divOutstandingPackageAmount().hide();
                     }
                     base.Function.ListingProducts(data.data.newCalculationTypePurchase.purchaseDetail);
                     $('#loading-area').fadeOut();
@@ -384,27 +386,6 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
                 window.location.href = MLM.Site.ShoppingCart.Actions.RedirectOrder;
             });
         },
-        ShowSwallConfirmAdditionalPurchase: function (message) {
-            Swal.fire({
-                title: message,
-                text: "Esto no se puede revertir!",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Si, generar adicional"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    base.Ajax.AjaxAddToOrder.data = {
-                        quantity: quantity,
-                        productId: productId,
-                        process: 'Edit',
-                        typePurchaseId: base.Parameters.typePurchaseWholesaleId
-                    };
-                    base.Ajax.AjaxAddToOrder.submit();
-                }
-            });
-        },
         clsNumberPagination: function () {
             var parentElement = $(document);
             parentElement.on('click', '.page-link', function () {
@@ -529,9 +510,13 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
             base.Control.divPagination().append('<li class="page-item page-indicator"><a class="page-link" href="#" id="next">»</a></li>');
         },
         ListingProducts: function (productsOrder) {
+            const listTypePurchaseAfiliaton = ['2', '3', '4', '8'];
+            var dd = base.Control.slcTypePurchase().val();
+            
             base.Control.groupProducts().empty();
             var $groupProducts = $('#groupProducts');
             productsOrder.forEach(function (product) {
+                var disabledDelete = listTypePurchaseAfiliaton.includes(base.Control.slcTypePurchase().val()) && product.productId === 7 ? "disabled" : "";
                 var productHtml = `
                 <li class="list-group-item d-flex justify-content-center" style="flex-wrap: wrap;">
 				    <div class="col-xl-3 col-sm-6" style="display: flex;justify-content: center; height: 100px;">
@@ -550,7 +535,7 @@ MLM.Site.ShoppingCart.Index.Controller = function () {
 				    	<h5>S/<a id="lblSubtotalNetAmount${product.productId}">${product.subtotalNetAmount}</a></h5>
 				    </div>
                     <div class="col-xl-1 col-sm-6" style="display: flex;justify-content: center; align-items: center;padding-top: inherit;">
-                        <button value-hidden="${product.productId}" class="btn btn-primary backgroundRedButtonMLM sharp dltToOrder" style="color:white;margin-left: 5px;"><i class="fa-solid fa-trash"></i></button>
+                        <button value-hidden="${product.productId}" class="btn btn-primary backgroundRedButtonMLM sharp dltToOrder" style="color:white;margin-left: 5px;" ${disabledDelete}><i class="fa-solid fa-trash"></i></button>
 				    </div>
 				</li>
                 `;
