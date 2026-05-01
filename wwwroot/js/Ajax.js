@@ -1,3 +1,4 @@
+//ns('CommandCenter.Site.UI.Web.Components');
 ns('MLM.Site.UI.Web.Components');
 MLM.Site.UI.Web.Components.Ajax = function (opts) {
     this.init(opts);
@@ -233,7 +234,7 @@ MLM.Site.UI.Web.Components.Ajax.prototype = {
     },
 
     implementLoading: function () {
-        //this.loading = new MLM.Site.UI.Web.Components.ProgressBar({ targetLoading: this.targetLoading });
+        //this.loading = new Mitosiz.Site.UI.Web.Components.ProgressBar({ targetLoading: this.targetLoading });
     },
 
     abort: function () {

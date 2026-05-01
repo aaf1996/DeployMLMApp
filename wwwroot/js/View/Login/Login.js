@@ -22,7 +22,8 @@ MLM.Site.Login.PageLogin.Controller = function () {
         AjaxValidateLoginSuccess: function (data) {
             if (data) {
                 if (data.isSuccess) {
-                    window.location.href = MLM.Site.Login.Actions.RedirectIndexAdmin;
+                    var redirect = data.data.packageId === 4 ? MLM.Site.Login.Actions.RedirectOrderAdmin : MLM.Site.Login.Actions.RedirectIndexAdmin;
+                    window.location.href = redirect;
                 }
                 else {
                     Swal.fire("Oops...", data.message, "error") 
