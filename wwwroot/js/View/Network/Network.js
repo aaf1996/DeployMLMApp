@@ -224,7 +224,8 @@ MLM.Site.Network.Index.Controller = function () {
             }
         },
         btnGenerateURLRegisterClick: function () {
-            const currentUrl = window.location.href + '/' + base.Parameters.fullNameUrl + '/' + base.Parameters.userIdUrl;
+            const fullName = base.Parameters.fullNameUrl.replace(/\s+/g, '');
+            const currentUrl = window.location.href + '/' + fullName + '/' + base.Parameters.userIdUrl;
             navigator.clipboard.writeText(currentUrl)
                 .then(function () {
                     Swal.fire("Excelente !!", "URL copiada !!", "success")
