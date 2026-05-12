@@ -213,7 +213,7 @@ MLM.Site.Network.Index.Controller = function () {
                     districtId: base.Control.slcDistrict().val(),
                     phone: base.Control.txtPhone().val(),
                     ubigeo: base.Control.txtUbigeo().val(),
-                    birthDate: birthDateData,
+                    birthDate: base.Control.txtBirthDate().val(),
                     profilePicture: "",
                     recognitionName: base.Control.txtRecognitionName().val(),
                     storeId: storeid,
